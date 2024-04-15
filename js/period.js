@@ -8,6 +8,7 @@ export const period = () => {
     const count = document.querySelector('.period__btn_count');
     const reset = document.querySelector('.period__btn_reset');
     const resultTable = document.querySelector('.period__table');
+    const errorMessage = document.querySelector('.period__error');
     
 
     // це я винесла, бо код дублювався
@@ -142,22 +143,34 @@ export const period = () => {
         
     }
 
+    const appendResult = (startDateValue, endDateValue, dayType, countResultMarkup) => {
+        let result = document.createElement('div');
+        result.classList.add('tr');
+        result.innerHTML = `
+            <div class="td">${startDateValue}</div>
+            <div class="td">${endDateValue}</div>
+            <div class="td">${dayType}</div>
+            <div class="td">${countResultMarkup}</div>
+        `;
+        return result;
+    }
+
     // ця функція у мене працює при кліку на кнопку "Порахувати", вона виводить таблицю результатів (в результати я виводжу все, що обрав користувач), але у мене виводиться лише один варіант, останній, тобто я щоразу перезаписую таблицю
     const showResult = (event) => {
 
         event.preventDefault();
 
         if(startDate.value === '' && endDate.value === '') {
-            return resultTable.innerHTML = '<p class="error">Будь ласка, оберіть початкову та кінцеву дати вище, щоб продовжити. Ваш вибір надасть нам змогу порахувати проміжок часу між цими датами.</p>';
+            return errorMessage.innerHTML = '<p class="error">Будь ласка, оберіть початкову та кінцеву дати вище, щоб продовжити. Ваш вибір надасть нам змогу порахувати проміжок часу між цими датами.</p>';
         }
 
-        let presetInfo = document.querySelectorAll('.period__btn_preset');
         let days = document.querySelectorAll('.period__items_days .period__input');
         let dayType;
-        let presetType;
         let countResultValue = countResult();
         let countResultMarkup;
-        
+
+        errorMessage.innerHTML = '';
+
         if(Array.isArray(countResultValue)) {
             countResultMarkup = `
                 <div>
@@ -177,59 +190,29 @@ export const period = () => {
             }
         })
 
-        presetInfo.forEach(item => {
-            if(item.hasAttribute('data-state')) {
-                presetType = item;
-            }
-        })
+        if (!document.querySelector('.table')) {
 
-        if (presetType) {
             resultTable.innerHTML = `
-            <div class="table">
-                <div class="thead">
-                    <div class="tr">
-                        <div class="th">Початкова дата</div>
-                        <div class="th">Кінцева дата</div>
-                        <div class="th">Режим</div>
-                        <div class="th">Міра</div>
-                        <div class="th">Результат</div>
+                <div class="table">
+                    <div class="thead">
+                        <div class="tr">
+                            <div class="th">Початкова дата</div>
+                            <div class="th">Кінцева дата</div>
+                            <div class="th">Міра</div>
+                            <div class="th">Результат</div>
+                        </div>
                     </div>
+                    <div class="tbody"></div>
                 </div>
-                <div class="tbody">
-                    <div class="tr">
-                        <div class="td">${startDate.value}</div>
-                        <div class="td">${endDate.value}</div>
-                        <div class="td">${presetType.textContent}</div>
-                        <div class="td">${dayType}</div>
-                        <div class="td">${countResultMarkup}</div>
-                    </div>
-                </div>
-            </div>
-        `
+            `;
+
         }
 
-        else {
-            resultTable.innerHTML = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th scope="col">Початкова дата</th>
-                            <th scope="col">Кінцева дата</th>
-                            <th scope="col">Міра</th>
-                            <th scope="col">Результат</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>${startDate.value}</td>
-                            <td>${endDate.value}</td>
-                            <td>${dayType}</td>
-                            <td>${dimensionType}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            `
-        }
+        let tbody = document.querySelector('.tbody');
+
+        let tr = appendResult(startDate.value, endDate.value, dayType, countResultMarkup);
+
+        tbody.append(tr);
 
     }
 

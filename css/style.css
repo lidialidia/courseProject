@@ -91,10 +91,6 @@ body {
     display: block;
 }
 
-.period__form {
-    margin-bottom: 24px;
-}
-
 .period__inputs {
     display: flex;
     align-items: center;
@@ -136,6 +132,7 @@ body {
     color: #dc3545;
     background-color: #fbeeeb;
     border-radius: 12px;
+    margin-top: 24px;
 }
 
 .period__items {
@@ -325,6 +322,7 @@ body {
     border: 1px solid #eef5fd;
     border-radius: 12px;
     overflow: hidden;
+    margin-top: 24px;
 }
 
 .thead .tr, .tbody .tr {
@@ -335,6 +333,13 @@ body {
     background-color: #eef5fd;
     font-size: 18px;
     font-weight: 500;
+}
+
+.tr {
+    border-bottom: 1px solid #eef5fd;
+    &:last-child {
+        border-bottom: 0;
+    }
 }
 
 .th, .td {
