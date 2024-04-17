@@ -1,4 +1,7 @@
 export const period = () => {
+
+    const PERIOD_LOCALSTORAGE_KEY = 'PERIOD_ITEMS';
+
     const dateInputs = document.querySelector('.period__inputs');
     const preset = document.querySelector('.period__items_preset');
     const days = document.querySelectorAll('.period__items_days .period__input');
@@ -6,26 +9,28 @@ export const period = () => {
     const endDate = document.querySelector('#endDate');
     const dimension = document.querySelectorAll('.period__items_dimension .period__input');
     const count = document.querySelector('.period__btn_count');
-    const reset = document.querySelector('.period__btn_reset');
     const resultTable = document.querySelector('.period__table');
-    const errorMessage = document.querySelector('.period__error');
-    
-
+    const form = document.querySelector('.period__form');
+    let dayType;
+        
     // це я винесла, бо код дублювався
     const selectDate = (input, value) => {
         let startDateValue = new Date(input.value);
         startDateValue.setDate(startDateValue.getDate() + value);
         return startDateValue.toISOString().split('T')[0];
     }
-    
+        
     // тут я перевіряю яке поле обрано перший, і в залежності від того перше чи друге - задаю мінімальне чи максимальне значення іншому полю
     const onChangeDate = (event) => {
         const input = event.target;
-    
+
         if(input === startDate) {
+            endDate.disabled = false;
             endDate.min = selectDate(input, 1)
-        } else if(input === endDate) {
-            startDate.max = selectDate(input, -1)
+        }
+
+        if(startDate.value !== '' && endDate.value !== '') {
+            count.classList.remove('disabled');
         }
     }
 
@@ -34,16 +39,16 @@ export const period = () => {
         if (startDate.value !== '') {
             endDate.value = selectDate(startDate, value);
         }
-        else if (endDate.value !== '') {
-            startDate.value = selectDate(endDate, -value);
-        }
         else {
             const today = new Date();
             startDate.value = today.toISOString().split('T')[0];
+            endDate.disabled = false;
             endDate.value = selectDate(startDate, value);
         }
+        if(startDate.value !== '' && endDate.value !== '') {
+            count.classList.remove('disabled');
+        }
     }
-
 
     // тут в залежності від того, на яку кнопку клікнув користувач додаю дата атрибут, він мені знадобиться нижче, коди я хочу в таблицю додату інформацію про пресет, який обрав користувач; а ще задаю час проміжок часу
     const onChangePreset = (event) => {
@@ -69,19 +74,29 @@ export const period = () => {
     }
 
     // переробила 3 функції на одну
-    const isWeekend = (firstDate, lastDate, type) => {
-        
-        var currentDate = new Date(firstDate);
-        var count = 0;
+    const isWeekend = (day) => {
+
+        if (day === 0 || day === 6) { // Якщо це вихідний день
+            return true;
+        }
+
+        return false;
+
+    }
+
+    const findDaysAmount = (firstDate, lastDate, type) => {
+
+        let currentDate = new Date(firstDate),
+            count = 0;
 
         while (currentDate < lastDate) {
-            var dayOfWeek = currentDate.getDay();
+            let dayOfWeek = currentDate.getDay();
             if (type === 'weekdays') {
-                if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Якщо це будній день
+                if (!isWeekend(dayOfWeek)) { // Якщо це будній день
                     count++;
                 }
             } else if (type === 'weekends') {
-                if (dayOfWeek === 0 || dayOfWeek === 6) { // Якщо це вихідний день
+                if (isWeekend(dayOfWeek)) { // Якщо це вихідний день
                     count++;
                 }
             } else {
@@ -91,9 +106,7 @@ export const period = () => {
         }
 
         return count;
-
     }
-
 
     // тут я вже викликаю ті функції, коли користувач обрав якийсь із радіо баттонів
     const onCheckDaysType = () => {
@@ -108,7 +121,9 @@ export const period = () => {
             }
         })
 
-        return isWeekend(startDateValue, endDateValue, daysType);
+        let daysAmount = findDaysAmount(startDateValue, endDateValue, daysType)
+
+        return daysAmount;
 
     }
 
@@ -117,6 +132,7 @@ export const period = () => {
 
         let daysAmount = onCheckDaysType();
         let result = [];
+
 
         dimension.forEach(item => {
             if(item.checked === true) {
@@ -135,99 +151,107 @@ export const period = () => {
             }
         })
 
-        if (!result.length) {
-            return 'Оберіть щось';
-        }
-
         return result;
         
     }
 
-    const appendResult = (startDateValue, endDateValue, dayType, countResultMarkup) => {
+    const getTableRowData = () => {
+        const dayType = Array.from(document.querySelectorAll('.period__items_days .period__input')).find(el => el.checked === true);
+        const countResultValue = countResult();
+
+        return {
+            'startDate': startDate.value,
+            'endDate': endDate.value,
+            'dayType': dayType.parentElement.textContent,
+            'result': countResultValue
+        }
+    }
+
+    const createTableRow = (rowData) => {
         let result = document.createElement('div');
         result.classList.add('tr');
+
+        let countResultMarkup = `
+            <div>
+                ${rowData.result.map(item => {
+                    return `<div>${item}</div>`
+                }).join(' ')}
+            </div>
+        `
+
         result.innerHTML = `
-            <div class="td">${startDateValue}</div>
-            <div class="td">${endDateValue}</div>
-            <div class="td">${dayType}</div>
+            <div class="td">${rowData.startDate}</div>
+            <div class="td">${rowData.endDate}</div>
+            <div class="td">${rowData.dayType}</div>
             <div class="td">${countResultMarkup}</div>
         `;
         return result;
     }
 
+    const createTableHead = () => {
+        resultTable.innerHTML = `
+            <div class="table">
+                <div class="thead">
+                    <div class="tr">
+                        <div class="th">Початкова дата</div>
+                        <div class="th">Кінцева дата</div>
+                        <div class="th">Міра</div>
+                        <div class="th">Результат</div>
+                    </div>
+                </div>
+                <div class="tbody"></div>
+            </div>
+        `;
+    }
+
+    const addToLocalStorate = (rowData) => {
+        let periodData = JSON.parse(localStorage.getItem(PERIOD_LOCALSTORAGE_KEY)) || [];
+        periodData.unshift(rowData);
+        if(periodData.length == 11) {
+            periodData.pop()
+        }
+        localStorage.setItem(PERIOD_LOCALSTORAGE_KEY, JSON.stringify(periodData))
+    }
+
+    const getFromLocalStorage = () => {
+        if(localStorage.getItem(PERIOD_LOCALSTORAGE_KEY)) {
+            createTableHead();
+            let tbody = document.querySelector('.tbody');
+            const periodData = JSON.parse(localStorage.getItem(PERIOD_LOCALSTORAGE_KEY));
+            periodData.forEach(item => {
+                const tr = createTableRow(item);
+                tbody.append(tr);
+            })
+        }
+    }
+
     // ця функція у мене працює при кліку на кнопку "Порахувати", вона виводить таблицю результатів (в результати я виводжу все, що обрав користувач), але у мене виводиться лише один варіант, останній, тобто я щоразу перезаписую таблицю
+    //переробила, тепер добавляється нова інформація
     const showResult = (event) => {
 
         event.preventDefault();
 
-        if(startDate.value === '' && endDate.value === '') {
-            return errorMessage.innerHTML = '<p class="error">Будь ласка, оберіть початкову та кінцеву дати вище, щоб продовжити. Ваш вибір надасть нам змогу порахувати проміжок часу між цими датами.</p>';
+        if (!resultTable.querySelector('.table')) {
+            createTableHead();
         }
 
-        let days = document.querySelectorAll('.period__items_days .period__input');
-        let dayType;
-        let countResultValue = countResult();
-        let countResultMarkup;
+        const tableRowData = getTableRowData();
 
-        errorMessage.innerHTML = '';
+        addToLocalStorate(tableRowData);
 
-        if(Array.isArray(countResultValue)) {
-            countResultMarkup = `
-                <div>
-                    ${countResultValue.map(item => {
-                        return `<div>${item}</div>`
-                    }).join(' ')}
-                </div>
-            `
-        }
-        else {
-            countResultMarkup = countResultValue
-        }
+        const tbody = document.querySelector('.tbody');
+        const tr = createTableRow(tableRowData);
+        tbody.prepend(tr);
 
-        days.forEach(item => {
-            if(item.checked === true) {
-                dayType = item.parentElement.textContent;
-            }
-        })
-
-        if (!document.querySelector('.table')) {
-
-            resultTable.innerHTML = `
-                <div class="table">
-                    <div class="thead">
-                        <div class="tr">
-                            <div class="th">Початкова дата</div>
-                            <div class="th">Кінцева дата</div>
-                            <div class="th">Міра</div>
-                            <div class="th">Результат</div>
-                        </div>
-                    </div>
-                    <div class="tbody"></div>
-                </div>
-            `;
-
-        }
-
-        let tbody = document.querySelector('.tbody');
-
-        let tr = appendResult(startDate.value, endDate.value, dayType, countResultMarkup);
-
-        tbody.append(tr);
-
+        form.reset();
+        endDate.disabled = true;
     }
 
-
-    // тут все просто, я просто очищаю форму, щоб можна було все заново ввести
-    const resetForm = (event) => {
-        event.preventDefault();
-        document.querySelector('.period__form').reset();
-    }
-    
     dateInputs.addEventListener('input', (event) => onChangeDate(event));
     preset.addEventListener('click', (event) => onChangePreset(event));
-    count.addEventListener('click', (event) => showResult(event));
-    reset.addEventListener('click', (event) => resetForm(event));
-}
+    form.addEventListener('submit', (event) => showResult(event));
 
+    getFromLocalStorage()
+}
 
 period();

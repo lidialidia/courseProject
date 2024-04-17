@@ -33,7 +33,7 @@
                                 </label>
                                 <label for="endDate">
                                     <span>Кінцева дата</span>
-                                    <input type="date" id="endDate" class="period__input period__input_date" placeholder="Виберіть кінцеву дату">
+                                    <input type="date" id="endDate" class="period__input period__input_date" placeholder="Виберіть кінцеву дату" disabled>
                                 </label>
                             </div>
                             <div class="period__items period__items_preset">
@@ -46,7 +46,7 @@
                             </div>
                             <div class="period__items period__items_days">
                                 <label class="period__label">Всі дні
-                                    <input class="period__input" type="radio" name="days" value="all">
+                                    <input class="period__input" type="radio" name="days" value="all" checked>
                                     <span class="period__checkmark"></span>
                                 </label>
                                 <label class="period__label">Будні дні
@@ -61,7 +61,7 @@
                             <p class="period__text">Порахувати кількість:</p>
                             <div class="period__items period__items_dimension">
                                 <label class="period__label"> днів
-                                    <input class="period__input" type="checkbox" name="dimension" value="days">
+                                    <input class="period__input" type="checkbox" name="dimension" value="days" checked>
                                     <span class="period__checkmark"></span>
                                 </label>
                                 <label class="period__label"> годин
@@ -78,11 +78,10 @@
                                 </label>
                             </div>
                             <div class="period__btns">
-                                <button type="submit" class="period__btn period__btn_count">Порахувати</button>
+                                <button type="submit" class="period__btn period__btn_count disabled">Порахувати</button>
                                 <button type="reset" class="period__btn period__btn_reset">Очистити</button>
                             </div>
                         </form>
-                        <div class="period__error"></div>
                         <div class="period__table"></div>
                     </div>
                 </div>
