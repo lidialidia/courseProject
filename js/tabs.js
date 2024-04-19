@@ -4,7 +4,6 @@ export const tabs = function () {
     const content = document.querySelectorAll('.tabs__content');
 
     const showContent = (event, index) => {
-        event.preventDefault();
         let link =  event.target;
         links.forEach(item => item.classList.remove('active'));
         link.classList.add('active');
@@ -16,5 +15,3 @@ export const tabs = function () {
         link.addEventListener('click', (event) => showContent(event, index));
     });
 }
-
-tabs();
