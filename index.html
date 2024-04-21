@@ -18,8 +18,8 @@
             <div class="tabs">
                 <div class="tabs__links">
                     <div class="tabs__links-inner">
-                        <a href="#choosePeriod" class="tabs__link active">Обрати період</a>
-                        <a href="#holidaysList" class="tabs__link">Список свят</a>
+                        <a href="#choosePeriod" class="tabs__link tabs__link_period active">Обрати період</a>
+                        <a href="#holidaysList" class="tabs__link tabs__link_holidays">Список свят</a>
                         <span class="glider"></span>
                     </div>
                 </div>
@@ -89,10 +89,14 @@
                     <div class="holidays">
                         <form action="#" name="holidays" class="holidays__form">
                             <div class="holidays__items">
-                                <select name="countries" id="countries"></select>
-                                <select name="years" id="years" disabled></select>
+                                <select class="holidays__select" name="countries" id="countries"></select>
+                                <select class="holidays__select" name="years" id="years"></select>
+                            </div>
+                            <div class="holidays__btns">
+                                <button type="submit" class="holidays__btn holidays__btn_count">Показати свята</button>
                             </div>
                         </form>
+                        <div class="holidays__table"></div>
                     </div>
                 </div>
             </div>
