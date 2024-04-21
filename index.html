@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Project</title>
+    <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <section class="section">
+        <div class="container">
+            <h1 class="section__title">Курсовий проєкт</h1>
+            <div class="tabs">
+                <div class="tabs__links">
+                    <div class="tabs__links-inner">
+                        <a href="#choosePeriod" class="tabs__link active">Обрати період</a>
+                        <a href="#holidaysList" class="tabs__link">Список свят</a>
+                        <span class="glider"></span>
+                    </div>
+                </div>
+                <div class="tabs__content active">
+                    <div class="period">
+                        <form action="#" name="period" class="period__form">
+                            <div class="period__inputs">
+                                <label for="startDate">
+                                    <span>Початкова дата</span>
+                                    <input type="date" id="startDate" class="period__input period__input_date" placeholder="Виберіть початкову дату">
+                                </label>
+                                <label for="endDate">
+                                    <span>Кінцева дата</span>
+                                    <input type="date" id="endDate" class="period__input period__input_date" placeholder="Виберіть кінцеву дату" disabled>
+                                </label>
+                            </div>
+                            <div class="period__items period__items_preset">
+                                <button class="period__btn period__btn_preset" data-value="week"> 
+                                    тиждень (7 днів)
+                                </label>
+                                <button class="period__btn period__btn_preset" data-value="month">
+                                    місяць (30 днів)
+                                </label>
+                            </div>
+                            <div class="period__items period__items_days">
+                                <label class="period__label">Всі дні
+                                    <input class="period__input" type="radio" name="days" value="all" checked>
+                                    <span class="period__checkmark"></span>
+                                </label>
+                                <label class="period__label">Будні дні
+                                    <input class="period__input" type="radio" name="days" value="weekdays">
+                                    <span class="period__checkmark"></span>
+                                </label>
+                                <label class="period__label">Вихідні дні
+                                    <input class="period__input" type="radio" name="days" value="weekends">
+                                    <span class="period__checkmark"></span>
+                                </label>
+                            </div>
+                            <p class="period__text">Порахувати кількість:</p>
+                            <div class="period__items period__items_dimension">
+                                <label class="period__label"> днів
+                                    <input class="period__input" type="checkbox" name="dimension" value="days" checked>
+                                    <span class="period__checkmark"></span>
+                                </label>
+                                <label class="period__label"> годин
+                                    <input class="period__input" type="checkbox" name="dimension" value="hours">
+                                    <span class="period__checkmark"></span>
+                                </label>
+                                <label class="period__label"> хвилин
+                                    <input class="period__input" type="checkbox" name="dimension" value="minutes">
+                                    <span class="period__checkmark"></span>
+                                </label>
+                                <label class="period__label"> секунд
+                                    <input class="period__input" type="checkbox" name="dimension" value="seconds">
+                                    <span class="period__checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="period__btns">
+                                <button type="submit" class="period__btn period__btn_count disabled">Порахувати</button>
+                                <button type="reset" class="period__btn period__btn_reset">Очистити</button>
+                            </div>
+                        </form>
+                        <div class="period__table"></div>
+                    </div>
+                </div>
+                <div class="tabs__content">
+                    <div class="holidays">
+                        <form action="#" name="holidays" class="holidays__form">
+                            <div class="holidays__items">
+                                <select name="countries" id="countries"></select>
+                                <select name="years" id="years" disabled></select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <script src="./js/index.js" type="module"></script>
+</body>
+</html>
