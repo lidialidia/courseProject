@@ -6,9 +6,9 @@ export const createTableHeadHolidays = () => {
             <div class="table">
                 <div class="thead">
                     <div class="tr">
-                        <div class="th">Дата</div>
-                        <div class="th">Назва свята</div>
-                        <div class="th">Тип свята</div>
+                        <div class="th">Дата <span class="sort" data-type="date"></span></div>
+                        <div class="th">Назва свята <span class="sort" data-type="name"></span></div>
+                        <div class="th">Тип свята <span class="sort" data-type="type"></span></div>
                     </div>
                 </div>
                 <div class="tbody"></div>

@@ -24,7 +24,7 @@ const onChangeDate = (event) => {
         endDate.min = selectDate(input, 1)
     }
 
-    if(startDate.value !== '' && endDate.value !== '') {
+    if(startDate.value !== '') {
         count.classList.remove('disabled');
     }
 }
@@ -144,6 +144,10 @@ const countResult = () => {
             }
         }
     })
+
+    if (!result.length) {
+        result.push('<span class="error-text">Нічого не обрано</span>');
+    }
 
     return result;
     

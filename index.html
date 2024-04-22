@@ -89,13 +89,20 @@
                     <div class="holidays">
                         <form action="#" name="holidays" class="holidays__form">
                             <div class="holidays__items">
-                                <select class="holidays__select" name="countries" id="countries"></select>
-                                <select class="holidays__select" name="years" id="years"></select>
+                                <label for="countries">
+                                    <span>Оберіть країну</span>
+                                    <select class="holidays__select" name="countries" id="countries"></select>
+                                </label>
+                                <label for="years">
+                                    <span>Оберіть рік</span>
+                                    <select class="holidays__select" name="years" id="years"></select>
+                                </label>
                             </div>
                             <div class="holidays__btns">
                                 <button type="submit" class="holidays__btn holidays__btn_count">Показати свята</button>
                             </div>
                         </form>
+                        <div class="holidays__error"></div>
                         <div class="holidays__table"></div>
                     </div>
                 </div>

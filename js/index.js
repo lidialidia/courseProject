@@ -43,8 +43,11 @@ const showResult = (event) => {
     const tr = createTableRow(tableRowData);
     tbody.prepend(tr);
 
+
+    const count = document.querySelector('.period__btn_count');
     formPeriod.reset();
     endDate.disabled = true;
+    count.classList.add('disabled');
 }
 
 formPeriod.addEventListener('submit', showResult);
@@ -58,7 +61,7 @@ const formHolidays = document.querySelector('.holidays__form');
 const selectYears = document.querySelector('#years');
 const holidaysTable = document.querySelector('.holidays__table');
 
-const API_KEY = 'ubivWwsPRVmcPHVzsOuq8eN56b1OwdEV';
+const API_KEY = 'AezJyO2qVghUd7RCSO87eMZWIEhKWUIu';
 
 const getCountries = async () => {
     const response = await fetch(
@@ -73,7 +76,7 @@ const getCountries = async () => {
     return data.response.countries;
 };
 
-const createOption = async () => {
+const fillCountriesSelect = async () => {
     try {
         const countries = await getCountries();
 
@@ -85,21 +88,8 @@ const createOption = async () => {
         })
 
     } catch (error) {
-        console.error('Error creating country options:', error.message);
+        document.querySelector('.holidays__error').innerHTML = `<div class="error">Халепа! Сталася помилка при виконанні запиту. Будь ласка, спробуйте ще раз або зверніться до адміністратора сайту.</div>`;
     }
-};
-
-const getHolidays = async (country, year) => {
-    const response = await fetch(
-      `https://calendarific.com/api/v2/holidays?&api_key=${API_KEY}&country=${country}&year=${year}`
-    );
-    const data = await response.json();
-  
-    if (!response.ok) {  
-      throw new Error(`Something went wrong! Details: ${data.message}`);
-    }
-
-    return data.response.holidays;
 };
 
 const createYears = () => {
@@ -116,6 +106,19 @@ const createYears = () => {
         selectYears.append(option);
     }
 }
+
+const getHolidays = async (country, year) => {
+    const response = await fetch(
+      `https://calendarific.com/api/v2/holidays?&api_key=${API_KEY}&country=${country}&year=${year}`
+    );
+    const data = await response.json();
+  
+    if (!response.ok) {  
+      throw new Error(`Something went wrong! Details: ${data.message}`);
+    }
+
+    return data.response.holidays;
+};
 
 const getTableRowDataHolidays = async () => {
 
@@ -160,22 +163,66 @@ const createTableRowHolidays = (rowData) => {
     return result;
 }
 
+const sortTable = (arr, type, isAscending) => {
+    console.log(isAscending)
+    return arr.sort((a, b) => {
+        if (a[type] > b[type]) {
+            return isAscending ? 1 : -1;
+        }
+        if (a[type] < b[type]) {
+            return isAscending ? -1 : 1;
+        }
+        return 0;
+    })
+}
+
+const onSort = (event, data) => {
+    const target = event.target.closest(".sort");
+    
+    if(target){
+        document.querySelectorAll('.sort').forEach(item => {
+            if(item !== target) {
+                item.parentElement.classList.remove('active')
+                item.classList.remove('asc', 'desc')
+            }
+        })
+        target.parentElement.classList.add('active');
+        if (target.classList.contains('asc')) {
+            target.classList.remove('asc');
+            target.classList.add('desc');
+        } else {
+            target.classList.remove('desc');
+            target.classList.add('asc');
+        }
+        addRows(sortTable(data, target.getAttribute('data-type'), target.classList.contains('asc')))
+    }
+}
+
+const addRows = (data) => {
+    const tbody = holidaysTable.querySelector('.tbody');
+
+    tbody.innerHTML = '';
+
+    data.forEach(row => {
+        const tr = createTableRowHolidays(row);
+        tbody.append(tr);
+    });
+}
+
+
 const showHollidays = async (event) => {
     event.preventDefault();
+
+    document.removeEventListener('click', onSort);
 
     const tableRowData = await getTableRowDataHolidays();
 
     createTableHeadHolidays();
 
-    const tbody = holidaysTable.querySelector('.tbody');
+    addRows(tableRowData);
 
-    tbody.innerHTML = '';
+    document.addEventListener('click', (event) => onSort(event, tableRowData));
 
-    tableRowData.forEach(row => {
-        const tr = createTableRowHolidays(row);
-        tbody.append(tr);
-    })
-    
 }
 
 formHolidays.addEventListener('submit', showHollidays);
@@ -193,7 +240,7 @@ const tabs = function () {
         content.forEach(item => item.classList.remove('active'));
         content[index].classList.add('active');
         if (link.classList.contains('active', 'tabs__link_holidays')) {
-            createOption();
+            fillCountriesSelect();
             createYears();
         }
     }
