@@ -169,7 +169,6 @@ const createTableRowHolidays = (rowData) => {
 }
 
 const sortTable = (arr, type, isAscending) => {
-    console.log(isAscending)
     return arr.sort((a, b) => {
         if (a[type] > b[type]) {
             return isAscending ? 1 : -1;
@@ -214,7 +213,6 @@ const addRows = (data) => {
     });
 }
 
-
 const showHollidays = async (event) => {
     event.preventDefault();
 
@@ -223,6 +221,15 @@ const showHollidays = async (event) => {
     const tableRowData = await getTableRowDataHolidays();
 
     createTableHeadHolidays();
+
+    let ths = document.querySelectorAll('.th'); 
+
+    ths.forEach(th => {
+        if ( th.classList.contains('active')) {
+            th.classList.remove('active');
+            th.querySelector('.sort').classList.remove('asc', 'desc');
+        }
+    })
 
     addRows(tableRowData);
 
