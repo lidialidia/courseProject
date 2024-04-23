@@ -1,11 +1,13 @@
 export const dateInputs = document.querySelector('.period__inputs');
 export const preset = document.querySelector('.period__items_preset');
-const days = document.querySelectorAll('.period__items_days .period__input');
 export const startDate = document.querySelector('#startDate');
 export const endDate = document.querySelector('#endDate');
+export let dayType;
+const days = document.querySelectorAll('.period__items_days .period__input');
 const dimension = document.querySelectorAll('.period__items_dimension .period__input');
 const count = document.querySelector('.period__btn_count');
-export let dayType;
+const resultTable = document.querySelector('.period__table');
+
         
 // це я винесла, бо код дублювався
 export const selectDate = (input, value) => {
@@ -22,7 +24,7 @@ const onChangeDate = (event) => {
         endDate.min = selectDate(input, 1)
     }
 
-    if(startDate.value !== '' && endDate.value !== '') {
+    if(startDate.value !== '') {
         count.classList.remove('disabled');
     }
 }
@@ -143,6 +145,10 @@ const countResult = () => {
         }
     })
 
+    if (!result.length) {
+        result.push('<span class="error-text">Нічого не обрано</span>');
+    }
+
     return result;
     
 }
@@ -157,6 +163,22 @@ export const getTableRowData = () => {
         'dayType': dayType.parentElement.textContent,
         'result': countResultValue
     }
+}
+
+export const createTableHead = () => {
+    resultTable.innerHTML = `
+        <div class="table">
+            <div class="thead">
+                <div class="tr">
+                    <div class="th">Початкова дата</div>
+                    <div class="th">Кінцева дата</div>
+                    <div class="th">Міра</div>
+                    <div class="th">Результат</div>
+                </div>
+            </div>
+            <div class="tbody"></div>
+        </div>
+    `;
 }
 
 export const createTableRow = (rowData) => {
