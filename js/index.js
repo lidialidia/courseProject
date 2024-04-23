@@ -1,15 +1,16 @@
 import { createTableHead, createTableRow, getTableRowData } from './period.js';
-import { createTableHeadHolidays } from './holidays.js';
+import { createTableHeadHolidays, changeDateFormat } from './holidays.js';
 
 // first tab
 const formPeriod = document.querySelector('.period__form');
 const PERIOD_LOCALSTORAGE_KEY = 'PERIOD_ITEMS';
 const resultTable = document.querySelector('.period__table');
+const MAX_ROWS = 10;
 
 const addToLocalStorate = (rowData) => {
     let periodData = JSON.parse(localStorage.getItem(PERIOD_LOCALSTORAGE_KEY)) || [];
     periodData.unshift(rowData);
-    if(periodData.length == 11) {
+    if(periodData.length == MAX_ROWS + 1) {
         periodData.pop()
     }
     localStorage.setItem(PERIOD_LOCALSTORAGE_KEY, JSON.stringify(periodData))
@@ -40,8 +41,12 @@ const showResult = (event) => {
     addToLocalStorate(tableRowData);
 
     const tbody = resultTable.querySelector('.tbody');
-    const tr = createTableRow(tableRowData);
-    tbody.prepend(tr);
+    
+    tbody.prepend(createTableRow(tableRowData));
+    
+    if(tbody.querySelectorAll('.tr').length === MAX_ROWS + 1) {
+        tbody.removeChild(tbody.lastChild)
+    }
 
 
     const count = document.querySelector('.period__btn_count');
@@ -152,10 +157,10 @@ const createTableRowHolidays = (rowData) => {
     let result = document.createElement('div');
     result.classList.add('tr');
 
-    console.log(rowData);
+    let formattedDate = changeDateFormat(rowData.date);
 
     result.innerHTML = `
-        <div class="td">${rowData.date}</div>
+        <div class="td">${formattedDate}</div>
         <div class="td">${rowData.name}</div>
         <div class="td">${rowData.type}</div>
     `;
@@ -228,13 +233,18 @@ const showHollidays = async (event) => {
 formHolidays.addEventListener('submit', showHollidays);
 
 // tabs
+
 const tabs = function () {
 
     const links = document.querySelectorAll('.tabs__link');
     const content = document.querySelectorAll('.tabs__content');
 
     const showContent = (event, index) => {
+        event.preventDefault();
+
         let link =  event.target;
+        const tabId = link.getAttribute('data-tab-id');
+
         links.forEach(item => item.classList.remove('active'));
         link.classList.add('active');
         content.forEach(item => item.classList.remove('active'));
@@ -243,6 +253,7 @@ const tabs = function () {
             fillCountriesSelect();
             createYears();
         }
+        history.pushState(null, null, `?tab=${tabId}`);
     }
 
     links.forEach((link, index) => {
@@ -250,4 +261,31 @@ const tabs = function () {
     });
 }
 
-tabs();
+const init = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const links = document.querySelectorAll('.tabs__link');
+    const content = document.querySelectorAll('.tabs__content');
+
+    tabs();
+
+    links.forEach((link, index) => {
+        const tabId = link.getAttribute('data-tab-id');
+    
+        if (urlParams.has('tab')) {
+            if (urlParams.get('tab') === tabId) {
+                link.classList.add('active');
+                content[index].classList.add('active');
+                if (tabId === 'holidaysList') {
+                    fillCountriesSelect();
+                    createYears();
+                }
+            }
+        } else {
+            links[0].classList.add('active');
+            content[0].classList.add('active');
+        }
+    })
+
+}
+
+init();

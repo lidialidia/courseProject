@@ -16,3 +16,19 @@ export const createTableHeadHolidays = () => {
         `;
     }
 }
+
+export const changeDateFormat = (unformattedDate) => {
+    let date = new Date(unformattedDate);
+    let formattedDate;
+
+    let day = date.getDate(),
+        month = date.getMonth() + 1,
+        year = date.getFullYear();
+
+    day = day < 10 ? '0' + day : day;
+    month = month < 10 ? '0' + month : month;
+
+    formattedDate = `${day}.${month}.${year}`;
+
+    return formattedDate;
+}
