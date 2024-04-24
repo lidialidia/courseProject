@@ -1,15 +1,15 @@
+import { changeDateFormat } from "./helpers.js";
+
 export const dateInputs = document.querySelector('.period__inputs');
 export const preset = document.querySelector('.period__items_preset');
 export const startDate = document.querySelector('#startDate');
 export const endDate = document.querySelector('#endDate');
+export const resultTable = document.querySelector('.period__table');
 export let dayType;
 const days = document.querySelectorAll('.period__items_days .period__input');
 const dimension = document.querySelectorAll('.period__items_dimension .period__input');
 const count = document.querySelector('.period__btn_count');
-const resultTable = document.querySelector('.period__table');
 
-        
-// це я винесла, бо код дублювався
 export const selectDate = (input, value) => {
     let startDateValue = new Date(input.value);
     startDateValue.setDate(startDateValue.getDate() + value);
@@ -24,7 +24,7 @@ const onChangeDate = (event) => {
         endDate.min = selectDate(input, 1)
     }
 
-    if(startDate.value !== '') {
+    if(startDate.value !== '' && endDate.value !== '') {
         count.classList.remove('disabled');
     }
 }
@@ -191,11 +191,14 @@ export const createTableRow = (rowData) => {
                 return `<div>${item}</div>`
             }).join(' ')}
         </div>
-    `
+    `;
+
+    let formattedStartDate = changeDateFormat(rowData.startDate),
+        formattedEndDate = changeDateFormat(rowData.endDate)
 
     result.innerHTML = `
-        <div class="td">${rowData.startDate}</div>
-        <div class="td">${rowData.endDate}</div>
+        <div class="td">${formattedStartDate}</div>
+        <div class="td">${formattedEndDate}</div>
         <div class="td">${rowData.dayType}</div>
         <div class="td">${countResultMarkup}</div>
     `;
