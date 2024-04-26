@@ -1,8 +1,8 @@
 import { changeDateFormat } from "./helpers.js";
+import { getCountries, getHolidays } from "./api.js";
 
 export const holidaysTable = document.querySelector('.holidays__table');
 export const selectYears = document.querySelector('#years');
-export const API_KEY = 'AezJyO2qVghUd7RCSO87eMZWIEhKWUIu';
 export const selectCountries = document.querySelector('#countries');
 
 export const createTableHeadHolidays = () => {
@@ -22,18 +22,7 @@ export const createTableHeadHolidays = () => {
     }
 }
 
-const getCountries = async () => {
-    const response = await fetch(
-      `https://calendarific.com/api/v2/countries?api_key=${API_KEY}`
-    );
-    const data = await response.json();
-  
-    if (!response.ok) {  
-      throw new Error(`Something went wrong! Details: ${data.message}`);
-    }
-  
-    return data.response.countries;
-};
+console.log(getCountries());
 
 export const fillCountriesSelect = async () => {
     try {
@@ -65,19 +54,6 @@ export const createYears = () => {
         selectYears.append(option);
     }
 }
-
-const getHolidays = async (country, year) => {
-    const response = await fetch(
-      `https://calendarific.com/api/v2/holidays?&api_key=${API_KEY}&country=${country}&year=${year}`
-    );
-    const data = await response.json();
-  
-    if (!response.ok) {  
-      throw new Error(`Something went wrong! Details: ${data.message}`);
-    }
-
-    return data.response.holidays;
-};
 
 export const getTableRowDataHolidays = async () => {
 

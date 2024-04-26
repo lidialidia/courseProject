@@ -120,6 +120,18 @@ const init = () => {
         }
     })
 
+
+    let infoFromLocalStorage = getFromLocalStorage();
+
+    if (infoFromLocalStorage) {
+        createTableHead();
+        let tbody = document.querySelector('.tbody');
+        infoFromLocalStorage.forEach(item => {
+            const tr = createTableRow(item);
+            tbody.append(tr);
+        })
+    }
+
 }
 
 init();
