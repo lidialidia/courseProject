@@ -1,4 +1,9 @@
-const holidaysTable = document.querySelector('.holidays__table');
+import { changeDateFormat } from "./helpers.js";
+import { getCountries, getHolidays } from "./api.js";
+
+export const holidaysTable = document.querySelector('.holidays__table');
+export const selectYears = document.querySelector('#years');
+export const selectCountries = document.querySelector('#countries');
 
 export const createTableHeadHolidays = () => {
     if (!holidaysTable.querySelector('.table')) {
@@ -17,18 +22,87 @@ export const createTableHeadHolidays = () => {
     }
 }
 
-export const changeDateFormat = (unformattedDate) => {
-    let date = new Date(unformattedDate);
-    let formattedDate;
+export const fillCountriesSelect = async () => {
+    try {
+        const countries = await getCountries();
 
-    let day = date.getDate(),
-        month = date.getMonth() + 1,
-        year = date.getFullYear();
+        countries.forEach(country => {
+            const option = document.createElement('option');
+            option.value = country['iso-3166'];
+            option.textContent = country.country_name;
+            selectCountries.append(option);
+        })
 
-    day = day < 10 ? '0' + day : day;
-    month = month < 10 ? '0' + month : month;
+    } catch (error) {
+        document.querySelector('.holidays__error').innerHTML = `<div class="error">Халепа! Сталася помилка при виконанні запиту. Будь ласка, спробуйте ще раз або зверніться до адміністратора сайту.</div>`;
+    }
+};
 
-    formattedDate = `${day}.${month}.${year}`;
+export const createYears = () => {
 
-    return formattedDate;
+    const currentYear = new Date().getFullYear();
+
+    for(let year = 2001; year <= 2049; year++) {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        if (Number(option.value) === Number(currentYear)) {
+            option.selected = true;
+        }
+        selectYears.append(option);
+    }
+}
+
+export const getTableRowDataHolidays = async () => {
+
+    let country,
+        year;
+
+    Array.from(selectCountries.options).forEach(option => {
+        if(option.selected === true) {
+            country = option.value;
+        }
+    });
+    Array.from(selectYears.options).forEach(option => {
+        if(option.selected === true) {
+            year = option.value;
+        
+        }
+    });
+
+    const holidays = await getHolidays(country, year);
+
+    return holidays.map(holiday => {
+        return {
+            'date': holiday.date.iso,
+            'name': holiday.name,
+            'type': holiday.type[0]
+        }
+    })
+}
+
+const createTableRowHolidays = (rowData) => {
+    let result = document.createElement('div');
+    result.classList.add('tr');
+
+    let formattedDate = changeDateFormat(rowData.date);
+
+    result.innerHTML = `
+        <div class="td">${formattedDate}</div>
+        <div class="td">${rowData.name}</div>
+        <div class="td">${rowData.type}</div>
+    `;
+
+    return result;
+}
+
+export const addRows = (data) => {
+    const tbody = holidaysTable.querySelector('.tbody');
+
+    tbody.innerHTML = '';
+
+    data.forEach(row => {
+        const tr = createTableRowHolidays(row);
+        tbody.append(tr);
+    });
 }
