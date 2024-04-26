@@ -22,8 +22,6 @@ export const createTableHeadHolidays = () => {
     }
 }
 
-console.log(getCountries());
-
 export const fillCountriesSelect = async () => {
     try {
         const countries = await getCountries();
